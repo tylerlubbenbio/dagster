@@ -3,10 +3,7 @@
 dagster==1.12.14
 dagster-webserver==1.12.14
 dagster-graphql==1.12.14
-dagster-postgres==0.28.14
-dagster-k8s==0.28.14
 dagster-slack==0.28.14
-dagster-docker==0.28.14
 
 # dbt + Snowflake
 dbt-snowflake>=1.7.0,<2.0.0
