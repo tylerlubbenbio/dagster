@@ -9,6 +9,7 @@
 # connections/ credentials are in .env now — never commit raw connection files
 connections/
 *._ARCHIVED
+.tmp_dagster_home*/
 # -----------------------------------------------------------------------------
 # Python
 # -----------------------------------------------------------------------------
