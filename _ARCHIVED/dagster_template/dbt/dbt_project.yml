@@ -1,0 +1,85 @@
+name: '{{project_name}}_analytics'
+version: '1.0.0'
+config-version: 2
+
+# This should match your profile name in profiles.yml
+profile: 'default'
+
+model-paths: ["models"]
+snapshot-paths: ["snapshots"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# dbt 1.11 flags — catch errors early
+flags:
+  require_unique_project_resource_names: true
+
+# Global variables — never hardcode in SQL
+vars:
+  lookback_days: 3             # Incremental model late-arriving data window
+  dev_data_days: 30            # Days of data in dev environment
+  integration_data_days: 3650  # Days of data in integration environment (~10 years = full data)
+  default_start_date: '2020-01-01'  # dim_date spine start
+
+# Query tagging — track dbt queries in warehouse query history
+query-comment:
+  comment: "dbt: {{ node.unique_id }}"
+  append: true
+
+# Model configurations
+models:
+  "{{project_name}}_analytics":  # Match project name above (ACTIVATE: update this key)
+    # Staging layer - lightweight views (1:1 from raw)
+    staging:
+      +materialized: view
+      +schema: staging
+      +group: staging
+
+    # Core layer - cleaned, joined, business logic
+    core:
+      +materialized: table
+      +schema: core
+      +group: core
+      intermediate:
+        +materialized: table
+        +schema: core
+        +group: core
+
+    # Analytics layer - one wide table per domain
+    analytics:
+      +materialized: table
+      +schema: analytics
+      +group: analytics
+
+    # Analytics Ad-Hoc layer - one-off enriched models for exploratory/ad-hoc analysis
+    analytics_adhoc:
+      +materialized: table
+      +schema: analytics_adhoc
+      +group: analytics_adhoc
+      +tags: ['daily']
+
+    # Report layer - aggregated, dashboard-optimized
+    report:
+      +materialized: table
+      +schema: report
+      +group: report
+
+# Snapshot configurations (each snapshot must define its own unique_key)
+snapshots:
+  "{{project_name}}_analytics":  # Match project name above
+    +target_schema: "{{ project.name }}_snapshots"
+    +strategy: check
+
+# On-run-start: Log the run
+on-run-start:
+  - "{{ log('Starting dbt run at ' ~ run_started_at.strftime('%Y-%m-%d %H:%M:%S'), info=True) }}"
+
+# On-run-end: Log completion
+on-run-end:
+  - "{{ log('Completed dbt run at ' ~ run_started_at.strftime('%Y-%m-%d %H:%M:%S'), info=True) }}"
