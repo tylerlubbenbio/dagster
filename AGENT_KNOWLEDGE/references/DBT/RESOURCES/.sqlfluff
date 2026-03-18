@@ -1,0 +1,61 @@
+# =============================================================================
+# .sqlfluff — Automated SQL linting and formatting
+# =============================================================================
+# RULES:
+#   - Run in CI before any merge to main
+#   - All SQL keywords lowercase
+#   - 4-space indentation
+#   - Max line length 120 characters
+#   - Trailing commas required in SELECT clauses
+# =============================================================================
+
+[sqlfluff]
+dialect = ansi   # Change to: redshift, snowflake, postgres, etc.
+templater = dbt
+max_line_length = 120
+indent_unit = space
+large_file_skip_byte_limit = 0
+
+[sqlfluff:indentation]
+tab_space_size = 4
+indent_unit = space
+
+[sqlfluff:templater:dbt]
+project_dir = ./
+
+# ---------------------------------------------------------------------------
+# Capitalisation Rules — All lowercase
+# ---------------------------------------------------------------------------
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.identifiers]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.functions]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.literals]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.types]
+capitalisation_policy = lower
+
+# ---------------------------------------------------------------------------
+# Layout Rules
+# ---------------------------------------------------------------------------
+[sqlfluff:rules:layout.long_lines]
+max_line_length = 120
+
+[sqlfluff:rules:layout.spacing]
+# Ensure consistent spacing around operators
+max_line_length = 120
+
+# ---------------------------------------------------------------------------
+# Convention Rules
+# ---------------------------------------------------------------------------
+[sqlfluff:rules:convention.terminator]
+multiline_newline = true
+
+[sqlfluff:rules:convention.select_trailing_comma]
+select_clause_trailing_comma = require

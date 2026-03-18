@@ -1,0 +1,145 @@
+# =============================================================================
+# _schema.yml — Testing and governance hub for this directory
+# =============================================================================
+# RULES:
+#   - One _schema.yml per subdirectory
+#   - Every model MUST have a description
+#   - Every column MUST have a description
+#   - Tests: unique, not_null on PKs; relationships for FKs; accepted_values for enums
+#   - Use dbt_expectations for complex business logic validation
+#   - Tags and meta MUST match Dagster configuration
+#   - Report-layer models MUST have contract: true
+# =============================================================================
+
+version: 2
+
+models:
+  # ---------------------------------------------------------------------------
+  # Example: Staging Model
+  # ---------------------------------------------------------------------------
+  - name: stg_{{source}}__{{table}}
+    description: >
+      Cleaned and typed staging view of raw_{{source}}.{{table}}.
+      One row per {{entity}}. No joins, no aggregations.
+      Surrogate keys generated here via MD5 hash.
+    meta:
+      owner: "data-engineering"
+      contains_pii: false
+    config:
+      tags: ['daily', 'staging']
+
+    columns:
+      - name: "{{entity}}_sk"
+        description: "MD5 surrogate key for {{entity}}s"
+        tests:
+          - unique
+          - not_null
+
+      - name: "{{entity}}_id"
+        description: "Natural key — original ID from raw_{{source}}"
+        tests:
+          - unique
+          - not_null
+
+      # - name: "user_name"
+      #   description: "Lowercased and trimmed user display name"
+      #   tests:
+      #     - not_null
+
+      # - name: "created_at"
+      #   description: "Timestamp when the {{entity}} was created in {{source}}"
+      #   tests:
+      #     - not_null
+
+  # ---------------------------------------------------------------------------
+  # Example: Another Staging Model
+  # ---------------------------------------------------------------------------
+  # - name: stg_salesforce__accounts
+  #   description: >
+  #     Cleaned and typed staging view of raw_salesforce.accounts.
+  #     One row per account.
+  #   columns:
+  #     - name: "account_sk"
+  #       description: "MD5 surrogate key for accounts"
+  #       tests:
+  #         - unique
+  #         - not_null
+  #     - name: "account_id"
+  #       description: "Natural key — Salesforce Account ID"
+  #       tests:
+  #         - unique
+  #         - not_null
+
+  # ---------------------------------------------------------------------------
+  # Example: Core Dimension Model
+  # ---------------------------------------------------------------------------
+  # - name: dim_account
+  #   description: >
+  #     Dimension table for accounts. One row per account (current state).
+  #     SCD Type 1 — overwrites on daily refresh.
+  #   columns:
+  #     - name: "account_sk"
+  #       description: "Primary surrogate key"
+  #       tests:
+  #         - unique
+  #         - not_null
+
+  # ---------------------------------------------------------------------------
+  # Example: Core Fact Model
+  # ---------------------------------------------------------------------------
+  # - name: fct_crunches
+  #   description: >
+  #     Fact table for crunch transactions. One row per crunch.
+  #     Incremental with 3-day lookback. No dates — join to dim_date.
+  #   columns:
+  #     - name: "crunch_sk"
+  #       description: "Primary surrogate key"
+  #       tests:
+  #         - unique
+  #         - not_null
+  #     - name: "date_sk"
+  #       description: "Foreign key to dim_date"
+  #       tests:
+  #         - not_null
+  #         - relationships:
+  #             to: ref('dim_date')
+  #             field: date_sk
+  #     - name: "account_sk"
+  #       description: "Foreign key to dim_account"
+  #       tests:
+  #         - relationships:
+  #             to: ref('dim_account')
+  #             field: "account_sk"
+
+  # ---------------------------------------------------------------------------
+  # Example: Report Model with Contract (schema enforcement)
+  # ---------------------------------------------------------------------------
+  # - name: rpt_executive_dashboard_monthly
+  #   description: >
+  #     Aggregated monthly report for the executive dashboard.
+  #   config:
+  #     contract:
+  #       enforced: true
+  #   columns:
+  #     - name: "year_month"
+  #       description: "Reporting period (YYYY-MM)"
+  #       data_type: text
+  #       tests:
+  #         - not_null
+  #     - name: "total_crunches"
+  #       description: "Total crunches for the period"
+  #       data_type: numeric
+
+  # ---------------------------------------------------------------------------
+  # dbt-expectations Examples (complex business logic tests)
+  # ---------------------------------------------------------------------------
+  # - name: fct_crunches
+  #   tests:
+  #     - dbt_expectations.expect_table_row_count_to_be_between:
+  #         min_value: 1000
+  #         max_value: 10000000
+  #   columns:
+  #     - name: "email"
+  #       tests:
+  #         - dbt_expectations.expect_column_values_to_match_regex:
+  #             regex: "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"

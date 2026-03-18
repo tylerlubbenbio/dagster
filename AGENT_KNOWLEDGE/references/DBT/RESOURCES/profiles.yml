@@ -1,0 +1,63 @@
+# ---------------------------------------------------------------------------
+# profiles.yml — Database-Agnostic Multi-Environment Setup
+# ---------------------------------------------------------------------------
+# RULES:
+#   - Default target is dev (override via DBT_TARGET env var)
+#   - Dev builds into staging_dev sandbox schema
+#   - Prod builds into official layered schemas (staging, core, analytics, report)
+#   - No human runs against prod. Only CI/CD pipeline uses prod credentials.
+#   - All credentials come from environment variables — never hardcode secrets.
+# ---------------------------------------------------------------------------
+# ACTIVATE: Configure for your target database type
+# Uncomment and fill in the section for your database
+
+default:
+  target: "{{ env_var('DBT_TARGET', 'dev') }}"
+  outputs:
+
+    # ==========================================================================
+    # POSTGRES / REDSHIFT (both use psycopg2 driver)
+    # ==========================================================================
+    dev:
+      type: postgres    # or: redshift
+      host: "{{ env_var('TARGET_HOST') }}"
+      port: "{{ env_var('TARGET_PORT', '5432') | int }}"
+      user: "{{ env_var('TARGET_USERNAME') }}"
+      password: "{{ env_var('TARGET_PASSWORD') }}"
+      dbname: "{{ env_var('TARGET_DATABASE') }}"
+      schema: dev_staging
+      threads: 4
+
+    integration:
+      type: postgres    # or: redshift
+      host: "{{ env_var('TARGET_HOST') }}"
+      port: "{{ env_var('TARGET_PORT', '5432') | int }}"
+      user: "{{ env_var('TARGET_USERNAME') }}"
+      password: "{{ env_var('TARGET_PASSWORD') }}"
+      dbname: "{{ env_var('TARGET_DATABASE') }}"
+      schema: staging_dev
+      threads: 4
+
+    prod:
+      type: postgres    # or: redshift
+      host: "{{ env_var('TARGET_HOST') }}"
+      port: "{{ env_var('TARGET_PORT', '5432') | int }}"
+      user: "{{ env_var('TARGET_USERNAME') }}"
+      password: "{{ env_var('TARGET_PASSWORD') }}"
+      dbname: "{{ env_var('TARGET_DATABASE') }}"
+      schema: staging
+      threads: 4
+
+    # ==========================================================================
+    # SNOWFLAKE (uncomment and configure if using Snowflake)
+    # ==========================================================================
+    # dev_snowflake:
+    #   type: snowflake
+    #   account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+    #   user: "{{ env_var('TARGET_USERNAME') }}"
+    #   password: "{{ env_var('TARGET_PASSWORD') }}"
+    #   role: "{{ env_var('SNOWFLAKE_ROLE', 'TRANSFORMER') }}"
+    #   database: "{{ env_var('TARGET_DATABASE') }}"
+    #   warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH') }}"
+    #   schema: dev_staging
+    #   threads: 4

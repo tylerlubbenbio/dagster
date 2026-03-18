@@ -1,0 +1,43 @@
+# =============================================================================
+# exposures.yml — Dashboard and downstream consumer documentation
+# =============================================================================
+# RULES:
+#   - Document EVERY dashboard connected to report-layer models
+#   - This enables visual impact analysis in the lineage graph
+#   - Before making changes to report models, check exposures to understand
+#     which dashboards will be affected
+#   - Update this file whenever a new dashboard is created or retired
+# =============================================================================
+
+version: 2
+
+exposures:
+
+  - name: "executive_dashboard"
+    label: "Executive Dashboard"
+    type: dashboard
+    maturity: high
+    description: >
+      Monthly and weekly executive dashboard showing key business metrics
+      including usage trends, account growth, and revenue indicators.
+      Used by leadership for strategic decision-making.
+    owner:
+      name: "Data Engineering"
+      email: "data@{{project_name}}.com"
+    url: "https://{{dashboard_url}}"
+    depends_on:
+      - ref('rpt_executive_dashboard_monthly')
+      - ref('rpt_executive_dashboard_weekly')
+
+  # - name: "product_usage_dashboard"
+  #   label: "Product Usage Dashboard"
+  #   type: dashboard
+  #   maturity: medium
+  #   description: >
+  #     Product usage metrics including crunches, active users, and feature adoption.
+  #   owner:
+  #     name: "Data Engineering"
+  #     email: "data@{{project_name}}.com"
+  #   url: "https://..."
+  #   depends_on:
+  #     - ref('rpt_product_usage')
