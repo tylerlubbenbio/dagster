@@ -12,12 +12,9 @@ PYTHON := $(VENV)/bin/python
 PIP := $(VENV)/bin/pip
 DAGSTER := $(VENV)/bin/dagster
 
-# AWS/ECR settings (override via environment or command line)
-AWS_PROFILE ?= prod
-AWS_REGION ?= us-east-1
-AWS_ACCOUNT_ID ?= $(shell aws sts get-caller-identity --profile $(AWS_PROFILE) --query Account --output text 2>/dev/null)
-ECR_REGISTRY ?= $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com
-IMAGE_NAME := $(ECR_REGISTRY)/$(PROJECT_NAME)
+# Container registry settings (update for your cloud provider)
+REGISTRY ?= your-registry.example.com
+IMAGE_NAME := $(REGISTRY)/$(PROJECT_NAME)
 
 # Kubernetes settings
 KUBE_CONTEXT ?= prod
