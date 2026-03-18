@@ -6,6 +6,8 @@
 # Local Runtime Folders
 # -----------------------------------------------------------------------------
 # _ARCHIVED, _TESTING, _LOGS, _LOCAL_FILES are tracked in this repo
+# connections/ credentials are in .env now — never commit raw connection files
+connections/
 
 # -----------------------------------------------------------------------------
 # Python
