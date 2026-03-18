@@ -12,53 +12,95 @@
     "role": "ACCOUNTADMIN"
   },
   "sources": {
+    "google_ads_gallant_seto": {
+      "type": "api",
+      "customer_id": "7994854565"
+    },
+    "google_ads_noot": {
+      "type": "api",
+      "customer_id": "2888285093"
+    },
+    "refersion": {
+      "type": "api",
+      "base_url": "https://api.refersion.com/v2",
+      "reporting_export_url": "https://api.refersion.com/v2/reporting/export",
+      "report_type": "affiliate_performance"
+    },
+    "amazon_selling_partner_bio": {
+      "type": "api",
+      "region": "us-east-1",
+      "marketplace_id": "ATVPDKIKX0DER"
+    },
+    "amazon_selling_partner_noot": {
+      "type": "api",
+      "region": "us-east-1",
+      "marketplace_id": "ATVPDKIKX0DER"
+    },
+    "amazon_ads": {
+      "type": "api",
+      "region": "na",
+      "base_url": "https://advertising-api.amazon.com"
+    },
+    "pacvuedsp": {
+      "type": "api",
+      "base_url": "https://api.pacvue.com",
+      "ads_type_analysis_url": "https://api.pacvue.com/dspapi/api/DashboardV2/AdsTypeAnalysisLineChart",
+      "advertiser_ids": ["589425808083722978"],
+      "profile_ids": ["1486439282909756", "3871231915427058", "-1"],
+      "days_back": 365
+    },
+    "ga4": {
+      "type": "api",
+      "properties": ["345174638", "270052061"]
+    },
+    "gtm": {
+      "type": "api",
+      "account_id": "3960837183",
+      "container_id": "GTM-MJ5FMXK"
+    },
+    "meta": {
+      "type": "api",
+      "ad_account_id": "act_719414398516529",
+      "api_version": "v18.0"
+    },
     "klaviyo": {
       "type": "api",
       "base_url": "https://a.klaviyo.com/api"
     },
-    "meta": {
-      "type": "api"
-    },
-    "google_ads_gallant_seto": {
-      "type": "api"
-    },
-    "google_ads_noot": {
-      "type": "api"
-    },
-    "ga4": {
+    "triple_whale": {
       "type": "api",
-      "properties": ["270052061", "345174638"]
-    },
-    "gtm": {
-      "type": "api"
-    },
-    "amazon_ads": {
-      "type": "api"
-    },
-    "amazon_selling_partner": {
-      "type": "api"
+      "base_url": "https://api.triplewhale.com/api/v2",
+      "shop_domain": "bioptimizers.com",
+      "shop": "bioptimizers.com"
     },
     "tiktok_ads": {
-      "type": "api"
+      "type": "api",
+      "advertiser_id": "6895896905352478722"
     },
-    "pacvuedsp": {
-      "type": "api"
-    },
-    "refersion": {
-      "type": "api"
-    },
-    "triple_whale": {
-      "type": "api"
+    "tiktok_shop": {
+      "type": "api",
+      "api_base": "https://open-api.tiktokglobalshop.com",
+      "shop_id": "7495486977259899066",
+      "shop_code": "USLCF7E2BX",
+      "shop_name": "BIOptimizers",
+      "shop_cipher": "TTP_oLWYMQAAAACLH82Vh2un7sG6s614fmut"
     },
     "mysql_dock": {
       "type": "mysql",
-      "host": "",
-      "port": 3306,
-      "database": "dock_prod"
+      "host": "dock-01-read-only-do-user-6652512-0.c.db.ondigitalocean.com",
+      "port": 25060,
+      "database": "defaultdb",
+      "ssl": true,
+      "ssl_verify": false
     },
     "mongo_goldlantern": {
       "type": "mongodb",
-      "database": "goldlantern"
+      "host": "goldlantern-01-6200a47a.mongo.ondigitalocean.com",
+      "port": 27017,
+      "database": "goldlantern_prod",
+      "auth_source": "admin",
+      "ssl": true,
+      "replica_set": "goldlantern-01"
     }
   }
 }
