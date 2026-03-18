@@ -73,7 +73,7 @@ models:
 # Snapshot configurations (each snapshot must define its own unique_key)
 snapshots:
   "bio_dagster_dbt_analytics":  # Match project name above
-    +target_schema: "{{ project.name }}_snapshots"
+    +target_schema: bio_dagster_dbt_analytics_snapshots
     +strategy: check
 
 # On-run-start: Log the run
