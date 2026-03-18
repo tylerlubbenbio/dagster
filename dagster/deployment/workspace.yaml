@@ -1,0 +1,6 @@
+# Code locations (gRPC servers) loaded by webserver and daemon
+load_from:
+  - grpc_server:
+      host: dagster_user_code
+      port: 4000
+      location_name: "bi_user_code"

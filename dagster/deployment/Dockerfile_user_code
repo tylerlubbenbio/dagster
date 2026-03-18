@@ -1,0 +1,15 @@
+# Dagster user code / code location (gRPC server)
+FROM python:3.10-slim
+
+RUN pip install --no-cache-dir \
+    dagster==1.12.14 \
+    dagster-postgres==0.28.14 \
+    dagster-docker==0.28.14
+
+WORKDIR /opt/dagster/app
+COPY definitions.py /opt/dagster/app
+
+EXPOSE 4000
+HEALTHCHECK --timeout=5s --start-period=15s --interval=10s --retries=5 \
+    CMD dagster api grpc-health-check -p 4000 || exit 1
+CMD ["dagster", "api", "grpc", "-h", "0.0.0.0", "-p", "4000", "-f", "definitions.py"]
