@@ -39,36 +39,36 @@ models:
     staging:
       +materialized: view
       +schema: staging
-      +group: staging
+      # +group: staging
 
     # Core layer - cleaned, joined, business logic
     core:
       +materialized: table
       +schema: core
-      +group: core
+      # +group: core
       intermediate:
         +materialized: table
         +schema: core
-        +group: core
+        # +group: core
 
     # Analytics layer - one wide table per domain
     analytics:
       +materialized: table
       +schema: analytics
-      +group: analytics
+      # +group: analytics
 
     # Analytics Ad-Hoc layer - one-off enriched models for exploratory/ad-hoc analysis
     analytics_adhoc:
       +materialized: table
       +schema: analytics_adhoc
-      +group: analytics_adhoc
+      # +group: analytics_adhoc
       +tags: ['daily']
 
     # Report layer - aggregated, dashboard-optimized
     report:
       +materialized: table
       +schema: report
-      +group: report
+      # +group: report
 
 # Snapshot configurations (each snapshot must define its own unique_key)
 snapshots:
