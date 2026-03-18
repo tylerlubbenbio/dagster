@@ -2,7 +2,7 @@
 Dagster Definitions - main entry point.
 
 Run locally:  dagster dev -f dagster/definitions.py
-Deploy:       loaded by gRPC server in Dockerfile
+Deploy:       loaded by gRPC server
 
 Structure:
   - ingestion/definitions.py    -> Raw data extraction (API/DB sources)
