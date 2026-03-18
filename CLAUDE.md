@@ -1,4 +1,4 @@
-# {{PROJECT_NAME}} - Claude Instructions
+# bio-dagster-dbt - Claude Instructions
 
 ## Purpose
 
@@ -43,7 +43,7 @@ Multi-source ETL agent: extract from APIs and DBs → load to warehouse (RAW) �
 ## Directory Structure
 
 ```
-{{PROJECT_NAME}}/
+bio-dagster-dbt/
 ├── config.json, load_config.py, .env   # Config (structure in JSON; secrets from .env)
 ├── prompts/                             # LLM prompt templates
 ├── _LOCAL_FILES/                        # Local data before DB insert (subdirs per pipeline)
@@ -64,7 +64,7 @@ Multi-source ETL agent: extract from APIs and DBs → load to warehouse (RAW) �
 
 ## MCP Servers
 
-- **Warehouse MCP** - {{WAREHOUSE_MCP_DESCRIPTION}}
+- **Warehouse MCP** - Snowflake (account vab13150, database BIO)
 
 **Config**: `~/.cursor/mcp.json`. On macOS, use full path to npx and set `env.PATH` (see AGENT_KNOWLEDGE/docs/mcp_cursor_setup.md).
 
