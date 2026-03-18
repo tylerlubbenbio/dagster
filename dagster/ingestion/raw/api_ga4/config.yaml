@@ -1,0 +1,29 @@
+source: ga4
+source_type: api
+connection_resource: ga4
+custom_extractor: true
+default_group: raw_ga4
+
+assets:
+  - name: ga4_events
+    target_schema: raw_ga4
+    target_table: events
+    primary_key: event_name,event_date,property_id
+    incremental_strategy: timestamp
+    incremental_column: event_date
+    load_method: stage_copy
+
+  - name: ga4_users
+    target_schema: raw_ga4
+    target_table: users
+    primary_key: user_id,property_id
+    incremental_strategy: full_refresh
+    load_method: stage_copy
+
+  - name: ga4_ecommerce
+    target_schema: raw_ga4
+    target_table: ecommerce
+    primary_key: transaction_id,property_id
+    incremental_strategy: timestamp
+    incremental_column: event_date
+    load_method: stage_copy

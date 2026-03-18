@@ -5,21 +5,60 @@
     "ui_base_url": "http://localhost:3000"
   },
   "target": {
-    "type": "postgres",
-    "port": 5432
+    "type": "snowflake",
+    "account": "vab13150",
+    "database": "BIO",
+    "warehouse": "COMPUTE_WH",
+    "role": "ACCOUNTADMIN"
   },
-  "s3_default": {
-    "bucket": "your-data-staging-bucket",
-    "prefix": "raw",
-    "region": "us-east-1"
-  },
-  "databases": {
-    "_example_source": {
-      "type": "postgres",
-      "host": "your-source-db.example.com",
-      "port": 5432,
-      "database": "source_db",
-      "username": "readonly"
+  "sources": {
+    "klaviyo": {
+      "type": "api",
+      "base_url": "https://a.klaviyo.com/api"
+    },
+    "meta": {
+      "type": "api"
+    },
+    "google_ads_gallant_seto": {
+      "type": "api"
+    },
+    "google_ads_noot": {
+      "type": "api"
+    },
+    "ga4": {
+      "type": "api",
+      "properties": ["270052061", "345174638"]
+    },
+    "gtm": {
+      "type": "api"
+    },
+    "amazon_ads": {
+      "type": "api"
+    },
+    "amazon_selling_partner": {
+      "type": "api"
+    },
+    "tiktok_ads": {
+      "type": "api"
+    },
+    "pacvuedsp": {
+      "type": "api"
+    },
+    "refersion": {
+      "type": "api"
+    },
+    "triple_whale": {
+      "type": "api"
+    },
+    "mysql_dock": {
+      "type": "mysql",
+      "host": "",
+      "port": 3306,
+      "database": "dock_prod"
+    },
+    "mongo_goldlantern": {
+      "type": "mongodb",
+      "database": "goldlantern"
     }
   }
 }

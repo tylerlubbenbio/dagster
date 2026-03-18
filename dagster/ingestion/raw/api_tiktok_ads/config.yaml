@@ -1,0 +1,35 @@
+source: tiktok_ads
+source_type: api
+connection_resource: tiktok_ads
+custom_extractor: true
+default_group: raw_tiktok_ads
+
+assets:
+  - name: tiktok_campaigns
+    target_schema: raw_tiktok_ads
+    target_table: campaigns
+    primary_key: campaign_id
+    incremental_strategy: full_refresh
+    load_method: stage_copy
+
+  - name: tiktok_ad_groups
+    target_schema: raw_tiktok_ads
+    target_table: ad_groups
+    primary_key: adgroup_id
+    incremental_strategy: full_refresh
+    load_method: stage_copy
+
+  - name: tiktok_ads
+    target_schema: raw_tiktok_ads
+    target_table: ads
+    primary_key: ad_id
+    incremental_strategy: full_refresh
+    load_method: stage_copy
+
+  - name: tiktok_campaign_stats
+    target_schema: raw_tiktok_ads
+    target_table: campaign_stats
+    primary_key: campaign_id,stat_time_day
+    incremental_strategy: timestamp
+    incremental_column: stat_time_day
+    load_method: stage_copy

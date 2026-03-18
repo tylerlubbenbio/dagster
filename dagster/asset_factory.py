@@ -46,7 +46,6 @@ DEFAULT_OWNERS = ["{{DEFAULT_OWNER_EMAIL}}"]
 DEFAULT_RETRY = {
     "api": {"max_retries": 2, "delay": 30},
     "internal_db": {"max_retries": 1, "delay": 15},
-    "s3": {"max_retries": 2, "delay": 30},
 }
 
 
@@ -342,11 +341,8 @@ def _build_asset(source_config: dict, asset_config: dict, config_dir: Path):
     incremental_strategy = asset_config.get("incremental_strategy", "full_refresh")
     incremental_column = asset_config.get("incremental_column")
     load_method = asset_config.get(
-        "load_method", "s3_copy"
-    )  # Default: s3_copy for all tables
-    s3_bucket_config = asset_config.get("s3_bucket_config") or source_config.get(
-        "s3_bucket_config"
-    )
+        "load_method", "stage_copy"
+    )  # Default: stage_copy (Snowflake internal stage)
     compute_kind = asset_config.get(
         "compute_kind", source_config.get("source_system", source)
     )
@@ -391,9 +387,6 @@ def _build_asset(source_config: dict, asset_config: dict, config_dir: Path):
                 "layer": tags.get("layer", "raw"),
                 "incremental_strategy": incremental_strategy,
                 "incremental_column": incremental_column or "",
-                "s3_bucket_config": s3_bucket_config
-                if load_method == "s3_copy"
-                else None,
             }.items()
             if v is not None
         },

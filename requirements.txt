@@ -6,20 +6,20 @@ dagster-graphql==1.12.14
 dagster-postgres==0.28.14
 dagster-k8s==0.28.14
 dagster-slack==0.28.14
+dagster-docker==0.28.14
 
-# dbt — ACTIVATE: install the correct adapter for your database
-# dbt-postgres    (for Postgres)
-# dbt-snowflake   (for Snowflake)
-# dbt-redshift    (for Redshift)
+# dbt + Snowflake
+dbt-snowflake>=1.7.0,<2.0.0
 dagster-dbt==0.28.14
 
 # Database drivers
-psycopg2-binary==2.9.11
+snowflake-connector-python>=3.6.0,<4.0.0
+pymysql>=1.1.0,<2.0.0
+pymongo>=4.6.0,<5.0.0
 SQLAlchemy==2.0.46
 
 # API clients
 requests==2.32.5
-boto3==1.42.52
 
 # Utilities
 PyYAML==6.0.3

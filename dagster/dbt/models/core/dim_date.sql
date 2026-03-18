@@ -13,9 +13,6 @@
 
 {{ config(
     materialized='table',
-    -- ACTIVATE: sort/dist are Redshift-specific. Remove for Postgres/Snowflake.
-    sort='date_day',
-    dist='all',
     tags=['daily', 'core']
 ) }}
 

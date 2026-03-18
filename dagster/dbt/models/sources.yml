@@ -1,24 +1,115 @@
-# ACTIVATE: Define your raw sources here.
-# One sources block per raw schema (raw_{source}).
-# Example:
-#
-# version: 2
-#
-# sources:
-#   - name: raw_example
-#     database: "{{ env_var('TARGET_DATABASE') }}"
-#     schema: raw_example
-#     description: >
-#       Raw data from Example API. Loaded by pipeline.
-#     config:
-#       freshness:
-#         warn_after: { count: 24, period: hour }
-#         error_after: { count: 48, period: hour }
-#       loaded_at_field: inserted_at
-#     tables:
-#       - name: records
-#         description: "Raw records from Example API"
-
 version: 2
 
-sources: []
+sources:
+  - name: raw_klaviyo
+    database: BIO
+    schema: raw_klaviyo
+    tables:
+      - name: lists
+      - name: campaigns
+      - name: metrics
+
+  - name: raw_meta
+    database: BIO
+    schema: raw_meta
+    tables:
+      - name: campaigns
+      - name: campaign_insights
+
+  - name: raw_google_ads_gallant_seto
+    database: BIO
+    schema: raw_google_ads_gallant_seto
+    tables:
+      - name: campaigns
+      - name: ad_groups
+      - name: ads
+      - name: keywords
+      - name: campaign_performance
+      - name: ad_group_performance
+      - name: accounts
+
+  - name: raw_google_ads_noot
+    database: BIO
+    schema: raw_google_ads_noot
+    tables:
+      - name: campaigns
+      - name: ad_groups
+      - name: ads
+      - name: keywords
+      - name: campaign_performance
+      - name: ad_group_performance
+      - name: accounts
+
+  - name: raw_ga4
+    database: BIO
+    schema: raw_ga4
+    tables:
+      - name: events
+      - name: users
+      - name: ecommerce
+
+  - name: raw_gtm
+    database: BIO
+    schema: raw_gtm
+    tables:
+      - name: containers
+      - name: tags
+      - name: triggers
+      - name: variables
+
+  - name: raw_amazon_ads
+    database: BIO
+    schema: raw_amazon_ads
+    tables:
+      - name: campaigns
+      - name: ad_groups
+
+  - name: raw_amazon_selling_partner
+    database: BIO
+    schema: raw_amazon_selling_partner
+    tables:
+      - name: orders
+      - name: inventory
+      - name: financial_events
+
+  - name: raw_tiktok_ads
+    database: BIO
+    schema: raw_tiktok_ads
+    tables:
+      - name: campaigns
+      - name: ad_groups
+      - name: ads
+      - name: campaign_stats
+
+  - name: raw_pacvuedsp
+    database: BIO
+    schema: raw_pacvuedsp
+    tables:
+      - name: ads_type_analysis_line_chart
+
+  - name: raw_refersion
+    database: BIO
+    schema: raw_refersion
+    tables:
+      - name: affiliate_performance
+
+  - name: raw_triple_whale
+    database: BIO
+    schema: raw_triple_whale
+    tables:
+      - name: attribution
+      - name: summary
+
+  - name: raw_mysql_dock
+    database: BIO
+    schema: raw_mysql_dock
+    tables:
+      - name: orders
+      - name: customers
+
+  - name: raw_mongo_goldlantern
+    database: BIO
+    schema: raw_mongo_goldlantern
+    tables:
+      - name: processes
+      - name: scheduled_reports

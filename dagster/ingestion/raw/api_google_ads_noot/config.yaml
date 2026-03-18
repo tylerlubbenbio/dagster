@@ -1,0 +1,57 @@
+source: google_ads_noot
+source_type: api
+connection_resource: google_ads_noot
+custom_extractor: true
+default_group: raw_google_ads_noot
+
+assets:
+  - name: gads_noot_campaigns
+    target_schema: raw_google_ads_noot
+    target_table: campaigns
+    primary_key: id
+    incremental_strategy: full_refresh
+    load_method: stage_copy
+
+  - name: gads_noot_ad_groups
+    target_schema: raw_google_ads_noot
+    target_table: ad_groups
+    primary_key: id
+    incremental_strategy: full_refresh
+    load_method: stage_copy
+
+  - name: gads_noot_ads
+    target_schema: raw_google_ads_noot
+    target_table: ads
+    primary_key: id
+    incremental_strategy: full_refresh
+    load_method: stage_copy
+
+  - name: gads_noot_keywords
+    target_schema: raw_google_ads_noot
+    target_table: keywords
+    primary_key: id
+    incremental_strategy: full_refresh
+    load_method: stage_copy
+
+  - name: gads_noot_campaign_performance
+    target_schema: raw_google_ads_noot
+    target_table: campaign_performance
+    primary_key: campaign_id,date
+    incremental_strategy: timestamp
+    incremental_column: date
+    load_method: stage_copy
+
+  - name: gads_noot_ad_group_performance
+    target_schema: raw_google_ads_noot
+    target_table: ad_group_performance
+    primary_key: ad_group_id,date
+    incremental_strategy: timestamp
+    incremental_column: date
+    load_method: stage_copy
+
+  - name: gads_noot_accounts
+    target_schema: raw_google_ads_noot
+    target_table: accounts
+    primary_key: id
+    incremental_strategy: full_refresh
+    load_method: stage_copy

@@ -1,0 +1,21 @@
+source: meta
+source_type: api
+connection_resource: meta
+custom_extractor: true
+default_group: raw_meta
+
+assets:
+  - name: meta_campaigns
+    target_schema: raw_meta
+    target_table: campaigns
+    primary_key: id
+    incremental_strategy: full_refresh
+    load_method: stage_copy
+
+  - name: meta_campaign_insights
+    target_schema: raw_meta
+    target_table: campaign_insights
+    primary_key: id
+    incremental_strategy: timestamp
+    incremental_column: date_start
+    load_method: stage_copy

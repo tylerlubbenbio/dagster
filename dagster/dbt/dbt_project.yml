@@ -1,4 +1,4 @@
-name: '{{project_name}}_analytics'
+name: 'bio_dagster_dbt_analytics'
 version: '1.0.0'
 config-version: 2
 
@@ -34,7 +34,7 @@ query-comment:
 
 # Model configurations
 models:
-  "{{project_name}}_analytics":  # Match project name above (ACTIVATE: update this key)
+  "bio_dagster_dbt_analytics":  # Match project name above
     # Staging layer - lightweight views (1:1 from raw)
     staging:
       +materialized: view
@@ -72,7 +72,7 @@ models:
 
 # Snapshot configurations (each snapshot must define its own unique_key)
 snapshots:
-  "{{project_name}}_analytics":  # Match project name above
+  "bio_dagster_dbt_analytics":  # Match project name above
     +target_schema: "{{ project.name }}_snapshots"
     +strategy: check
 

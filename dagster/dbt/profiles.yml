@@ -1,53 +1,33 @@
-# ACTIVATE: Configure for your target database.
-# Set DBT_TARGET env var to switch between dev/integration/prod.
-
 default:
   target: "{{ env_var('DBT_TARGET', 'dev') }}"
   outputs:
-
-    # ==========================================================================
-    # POSTGRES (default — change type to 'redshift' for Redshift)
-    # ==========================================================================
     dev:
-      type: postgres
-      host: "{{ env_var('TARGET_HOST') }}"
-      port: "{{ env_var('TARGET_PORT', '5432') | int }}"
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
       user: "{{ env_var('TARGET_USERNAME') }}"
       password: "{{ env_var('TARGET_PASSWORD') }}"
-      dbname: "{{ env_var('TARGET_DATABASE') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'ACCOUNTADMIN') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH') }}"
+      database: "{{ env_var('TARGET_DATABASE', 'BIO') }}"
       schema: dev_staging
       threads: 4
-
     integration:
-      type: postgres
-      host: "{{ env_var('TARGET_HOST') }}"
-      port: "{{ env_var('TARGET_PORT', '5432') | int }}"
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
       user: "{{ env_var('TARGET_USERNAME') }}"
       password: "{{ env_var('TARGET_PASSWORD') }}"
-      dbname: "{{ env_var('TARGET_DATABASE') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'ACCOUNTADMIN') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH') }}"
+      database: "{{ env_var('TARGET_DATABASE', 'BIO') }}"
       schema: staging_dev
       threads: 4
-
     prod:
-      type: postgres
-      host: "{{ env_var('TARGET_HOST') }}"
-      port: "{{ env_var('TARGET_PORT', '5432') | int }}"
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
       user: "{{ env_var('TARGET_USERNAME') }}"
       password: "{{ env_var('TARGET_PASSWORD') }}"
-      dbname: "{{ env_var('TARGET_DATABASE') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'ACCOUNTADMIN') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH') }}"
+      database: "{{ env_var('TARGET_DATABASE', 'BIO') }}"
       schema: staging
       threads: 4
-
-    # ==========================================================================
-    # SNOWFLAKE — activate by setting type: snowflake in outputs above
-    # ==========================================================================
-    # dev_snowflake:
-    #   type: snowflake
-    #   account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
-    #   user: "{{ env_var('TARGET_USERNAME') }}"
-    #   password: "{{ env_var('TARGET_PASSWORD') }}"
-    #   role: "{{ env_var('SNOWFLAKE_ROLE', 'TRANSFORMER') }}"
-    #   database: "{{ env_var('TARGET_DATABASE') }}"
-    #   warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH') }}"
-    #   schema: dev_staging
-    #   threads: 4

@@ -1,0 +1,34 @@
+source: gtm
+source_type: api
+connection_resource: gtm
+custom_extractor: true
+default_group: raw_gtm
+
+assets:
+  - name: gtm_containers
+    target_schema: raw_gtm
+    target_table: containers
+    primary_key: containerId
+    incremental_strategy: full_refresh
+    load_method: stage_copy
+
+  - name: gtm_tags
+    target_schema: raw_gtm
+    target_table: tags
+    primary_key: tagId
+    incremental_strategy: full_refresh
+    load_method: stage_copy
+
+  - name: gtm_triggers
+    target_schema: raw_gtm
+    target_table: triggers
+    primary_key: triggerId
+    incremental_strategy: full_refresh
+    load_method: stage_copy
+
+  - name: gtm_variables
+    target_schema: raw_gtm
+    target_table: variables
+    primary_key: variableId
+    incremental_strategy: full_refresh
+    load_method: stage_copy

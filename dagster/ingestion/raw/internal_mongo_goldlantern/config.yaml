@@ -1,0 +1,20 @@
+source: mongo_goldlantern
+source_type: internal_db
+connection_resource: mongo_goldlantern
+custom_extractor: true
+default_group: raw_mongo_goldlantern
+
+assets:
+  - name: mongo_gl_processes
+    target_schema: raw_mongo_goldlantern
+    target_table: processes
+    primary_key: _id
+    incremental_strategy: full_refresh
+    load_method: stage_copy
+
+  - name: mongo_gl_scheduled_reports
+    target_schema: raw_mongo_goldlantern
+    target_table: scheduled_reports
+    primary_key: _id
+    incremental_strategy: full_refresh
+    load_method: stage_copy

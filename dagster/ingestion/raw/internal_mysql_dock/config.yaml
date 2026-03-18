@@ -1,0 +1,22 @@
+source: mysql_dock
+source_type: internal_db
+connection_resource: mysql_dock
+custom_extractor: true
+default_group: raw_mysql_dock
+
+assets:
+  - name: mysql_dock_orders
+    target_schema: raw_mysql_dock
+    target_table: orders
+    primary_key: id
+    incremental_strategy: timestamp
+    incremental_column: updated_at
+    load_method: stage_copy
+
+  - name: mysql_dock_customers
+    target_schema: raw_mysql_dock
+    target_table: customers
+    primary_key: id
+    incremental_strategy: timestamp
+    incremental_column: updated_at
+    load_method: stage_copy

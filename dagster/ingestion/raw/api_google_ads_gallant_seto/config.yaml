@@ -1,0 +1,57 @@
+source: google_ads_gallant_seto
+source_type: api
+connection_resource: google_ads_gallant_seto
+custom_extractor: true
+default_group: raw_google_ads_gallant_seto
+
+assets:
+  - name: gads_gs_campaigns
+    target_schema: raw_google_ads_gallant_seto
+    target_table: campaigns
+    primary_key: id
+    incremental_strategy: full_refresh
+    load_method: stage_copy
+
+  - name: gads_gs_ad_groups
+    target_schema: raw_google_ads_gallant_seto
+    target_table: ad_groups
+    primary_key: id
+    incremental_strategy: full_refresh
+    load_method: stage_copy
+
+  - name: gads_gs_ads
+    target_schema: raw_google_ads_gallant_seto
+    target_table: ads
+    primary_key: id
+    incremental_strategy: full_refresh
+    load_method: stage_copy
+
+  - name: gads_gs_keywords
+    target_schema: raw_google_ads_gallant_seto
+    target_table: keywords
+    primary_key: id
+    incremental_strategy: full_refresh
+    load_method: stage_copy
+
+  - name: gads_gs_campaign_performance
+    target_schema: raw_google_ads_gallant_seto
+    target_table: campaign_performance
+    primary_key: campaign_id,date
+    incremental_strategy: timestamp
+    incremental_column: date
+    load_method: stage_copy
+
+  - name: gads_gs_ad_group_performance
+    target_schema: raw_google_ads_gallant_seto
+    target_table: ad_group_performance
+    primary_key: ad_group_id,date
+    incremental_strategy: timestamp
+    incremental_column: date
+    load_method: stage_copy
+
+  - name: gads_gs_accounts
+    target_schema: raw_google_ads_gallant_seto
+    target_table: accounts
+    primary_key: id
+    incremental_strategy: full_refresh
+    load_method: stage_copy
