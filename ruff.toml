@@ -1,0 +1,12 @@
+exclude = [
+    "_TESTING",
+    "_ARCHIVED",
+    ".venv",
+    "venv",
+    "__pycache__",
+]
+
+[lint]
+ignore = [
+    "E402",   # module-level import not at top of file (sys.path pattern used throughout)
+]

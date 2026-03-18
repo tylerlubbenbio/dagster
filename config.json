@@ -1,0 +1,25 @@
+{
+  "_doc": "Structure and non-secret values only. Secrets injected from .env via load_config().",
+  "dagster": {
+    "env": "dev",
+    "ui_base_url": "http://localhost:3000"
+  },
+  "target": {
+    "type": "postgres",
+    "port": 5432
+  },
+  "s3_default": {
+    "bucket": "your-data-staging-bucket",
+    "prefix": "raw",
+    "region": "us-east-1"
+  },
+  "databases": {
+    "_example_source": {
+      "type": "postgres",
+      "host": "your-source-db.example.com",
+      "port": 5432,
+      "database": "source_db",
+      "username": "readonly"
+    }
+  }
+}

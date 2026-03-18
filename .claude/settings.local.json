@@ -1,0 +1,123 @@
+{
+  "permissions": {
+    "allow": [     "Read(**)",
+      "Glob(**)",
+      "Grep(**)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(tree:*)",
+      "Bash(wc:*)",
+      "Bash(tail:*)",
+      "Bash(head:*)",
+      "Bash(du:*)",
+      "Bash(df:*)",
+      "Bash(echo:*)",
+      "Bash(tee:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git config:*)",
+      "Bash(git checkout:*)",
+      "Bash(git rm:*)",
+      "Bash(git commit -m:*)",
+      "Bash(git -C * log:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(python3 -c:*)",
+      "Bash(pip install:*)",
+      "Bash(pip list:*)",
+      "Bash(venv/bin/python:*)",
+      "Bash(ps:*)",
+      "Bash(ps aux:*)",
+      "Bash(pkill:*)",
+      "Bash(kill:*)",
+      "Bash(xargs kill:*)",
+      "Bash(lsof:*)",
+      "Bash(nc:*)",
+      "Bash(netstat:*)",
+      "Bash(psql:*)",
+      "Bash(PGPASSWORD=* psql:*)",
+      "Bash(systemctl status:*)",
+      "Bash(systemctl is-active:*)",
+      "Bash(systemctl list-units:*)",
+      "Bash(systemctl show:*)",
+      "Bash(journalctl:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run lint:*)",
+      "Bash(pnpm test:*)",
+      "Bash(yarn test:*)",
+      "Bash(pytest:*)",
+      "Bash(curl:*)",
+      "Bash(grpcurl:*)",
+      "Bash(swapon:*)",
+      "Bash(sqlite3:*)",
+      "Bash(claude mcp:*)",
+      "Bash(done)",
+      "Bash(export *:*)",
+      "Bash(source:*)",
+      "Bash(for *:*)",
+      "Bash(powershell -NoProfile -ExecutionPolicy Bypass -File \"c:/Users/tlubb/Documents/Visual-Studio-Code-Projects/tiktok-analysis/.claude/hooks/prevent-deletes-archive-only.ps1\")",
+      "Bash(echo:*)",
+      "Bash(powershell -NoProfile -ExecutionPolicy Bypass -File \"c:/Users/tlubb/Documents/Visual-Studio-Code-Projects/tiktok-analysis/.claude/hooks/only-docs-md.ps1\")",
+      "Bash(git init:*)",
+      "Bash(git branch:*)",
+      "Bash(git config:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(curl:*)",
+      "Bash(git remote add:*)"],
+    "deny": [
+      "Bash(bash*)",
+      "Bash(sudo bash*)",
+      "Bash(rm -rf*)",
+      "Bash(eval*)",
+      "Bash(del /s*)",
+      "Bash(rd /s*)",
+      "Bash(rmdir /s*)",
+      "Bash(format*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .claude/hooks/prevent-deletes-archive-only.ps1",
+            "statusMessage": "🛡️  Validating command safety..."
+          },
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .claude/hooks/dcg-protection.ps1",
+            "statusMessage": "🛡️  DCG: Validating command safety..."
+          }
+        ]
+      },
+      {
+        "matcher": "Delete",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .claude/hooks/prevent-deletes-archive-only.ps1"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .claude/hooks/pre-commit.ps1",
+            "statusMessage": "Checking for git changes..."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+# Python 3.11 only. Use .python-version or pyenv.
+# Dagster core
+dagster==1.12.14
+dagster-webserver==1.12.14
+dagster-graphql==1.12.14
+dagster-postgres==0.28.14
+dagster-k8s==0.28.14
+dagster-slack==0.28.14
+
+# dbt — ACTIVATE: install the correct adapter for your database
+# dbt-postgres    (for Postgres)
+# dbt-snowflake   (for Snowflake)
+# dbt-redshift    (for Redshift)
+dagster-dbt==0.28.14
+
+# Database drivers
+psycopg2-binary==2.9.11
+SQLAlchemy==2.0.46
+
+# API clients
+requests==2.32.5
+boto3==1.42.52
+
+# Utilities
+PyYAML==6.0.3
+Jinja2==3.1.6
+ruff>=0.8.0
+
+# gRPC (Dagster user code server)
+grpcio==1.78.0
+grpcio-health-checking==1.78.0

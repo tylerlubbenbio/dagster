@@ -1,0 +1,24 @@
+# ACTIVATE: Define your raw sources here.
+# One sources block per raw schema (raw_{source}).
+# Example:
+#
+# version: 2
+#
+# sources:
+#   - name: raw_example
+#     database: "{{ env_var('TARGET_DATABASE') }}"
+#     schema: raw_example
+#     description: >
+#       Raw data from Example API. Loaded by pipeline.
+#     config:
+#       freshness:
+#         warn_after: { count: 24, period: hour }
+#         error_after: { count: 48, period: hour }
+#       loaded_at_field: inserted_at
+#     tables:
+#       - name: records
+#         description: "Raw records from Example API"
+
+version: 2
+
+sources: []

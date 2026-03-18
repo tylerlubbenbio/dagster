@@ -1,0 +1,30 @@
+# EXAMPLE: API Source Template
+# Copy this directory, rename to api_{your_source}, and customize.
+# Remove the leading underscore from the directory name when ready.
+
+source: example_api
+source_type: api
+connection_resource: example_api  # Must match key in get_all_resources()
+custom_extractor: true            # Use extractor.py for custom logic
+default_group: raw_example_api
+default_tags:
+  layer: raw
+  source_type: api
+  source_system: example_api
+  schedule_tier: daily
+
+assets:
+  - name: example_records
+    description: >
+      Example records from the Example API.
+      Replace this with a description of what this table contains,
+      how it's used, and what it links to.
+    target_schema: raw_example_api
+    target_table: records
+    primary_key: id
+    incremental_strategy: timestamp
+    incremental_column: updated_at
+    compute_kind: api
+    load_method: s3_copy
+    s3_bucket_config: s3_staging
+    schedule_tier: daily

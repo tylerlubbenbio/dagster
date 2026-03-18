@@ -1,0 +1,257 @@
+# Dagster Helm Chart Values
+# Documentation: https://docs.dagster.io/deployment/guides/kubernetes/deploying-with-helm
+# Full values reference: https://artifacthub.io/packages/helm/dagster/dagster?modal=values
+#
+# ACTIVATE: Replace all {{PLACEHOLDER}} values before deploying.
+
+# =============================================================================
+# GLOBAL CONFIGURATION
+# =============================================================================
+global:
+  postgresqlSecretName: "dagster-postgresql-secret"
+  dagsterHome: "/opt/dagster/dagster_home"
+  serviceAccountName: ""
+
+# =============================================================================
+# INGRESS CONFIGURATION
+# =============================================================================
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/target-type: ip
+    # ACTIVATE: Set to your ALB group name
+    alb.ingress.kubernetes.io/group.name: "{{ALB_GROUP_NAME}}"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+    # ACTIVATE: Set to your ACM certificate ARN
+    alb.ingress.kubernetes.io/certificate-arn: "{{ACM_CERTIFICATE_ARN}}"
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+    # ACTIVATE: Set to your internal hostname
+    external-dns.alpha.kubernetes.io/hostname: "{{DAGSTER_INTERNAL_HOSTNAME}}"
+  labels: {}
+  ingressClassName: ~
+  dagsterWebserver:
+    path: "/*"
+    pathType: ImplementationSpecific
+    # ACTIVATE: Set to your internal hostname
+    host: "{{DAGSTER_INTERNAL_HOSTNAME}}"
+    tls:
+      enabled: false
+      secretName: ""
+    precedingPaths: []
+    succeedingPaths: []
+
+# =============================================================================
+# DAGSTER WEBSERVER (UI)
+# =============================================================================
+dagsterWebserver:
+  replicaCount: 1
+
+  nodeSelector:
+    nodeType: job-runner
+
+  tolerations:
+    - key: "job-runner"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+
+  image:
+    repository: "docker.io/dagster/dagster-celery-k8s"
+    tag: ~  # Uses chart appVersion by default
+    pullPolicy: Always
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+  service:
+    type: ClusterIP
+    port: 80
+
+# =============================================================================
+# DAGSTER DAEMON
+# =============================================================================
+dagsterDaemon:
+  enabled: true
+
+  nodeSelector:
+    nodeType: job-runner
+
+  tolerations:
+    - key: "job-runner"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+
+  image:
+    repository: "dagster/dagster-k8s"
+    tag: ~  # Uses chart appVersion by default
+    pullPolicy: Always
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+  runCoordinator:
+    enabled: true
+    type: QueuedRunCoordinator
+    config:
+      queuedRunCoordinator:
+        maxConcurrentRuns: 3
+
+# =============================================================================
+# POSTGRESQL DATABASE
+# =============================================================================
+postgresql:
+  # Set to false if using external PostgreSQL
+  enabled: true
+
+  auth:
+    username: dagster
+    # ACTIVATE: Change this password before deploying to production
+    password: "{{POSTGRES_PASSWORD}}"
+    database: dagster
+
+  primary:
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+
+    persistence:
+      enabled: true
+      size: 8Gi
+
+# =============================================================================
+# RUN LAUNCHER CONFIGURATION
+# =============================================================================
+runLauncher:
+  type: K8sRunLauncher
+  config:
+    k8sRunLauncher:
+      jobNamespace: dagster
+
+      runK8sConfig:
+        podSpecConfig:
+          nodeSelector:
+            nodeType: job-runner
+          tolerations:
+            - key: "job-runner"
+              operator: "Equal"
+              value: "true"
+              effect: "NoSchedule"
+        containerConfig:
+          envFrom:
+            - secretRef:
+                name: dagster-user-code-secrets
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+
+# =============================================================================
+# USER CODE DEPLOYMENTS
+# =============================================================================
+dagster-user-deployments:
+  enabled: true
+
+  serviceAccount:
+    annotations:
+      # ACTIVATE: Set to your IAM role ARN for the Dagster service account
+      eks.amazonaws.com/role-arn: "{{DAGSTER_IAM_ROLE_ARN}}"
+
+  deployments:
+    - name: "dagster-user-code"
+      image:
+        # ACTIVATE: Set to your ECR repository URI
+        repository: "{{ECR_REGISTRY}}/{{PROJECT_NAME}}-dagster-user-code"
+        tag: "latest"
+        pullPolicy: Always
+
+      dagsterApiGrpcArgs:
+        - "--python-file"
+        - "/app/definitions.py"
+
+      port: 3030
+
+      nodeSelector:
+        nodeType: job-runner
+
+      tolerations:
+        - key: "job-runner"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+
+      resources:
+        limits:
+          cpu: 2000m
+          memory: 4Gi
+        requests:
+          cpu: 100m
+          memory: 256Mi
+
+      env: {}
+
+      # Pull all keys from the Kubernetes secret into the container as env vars.
+      # Create the secret once on the cluster:
+      #   kubectl create secret generic dagster-user-code-secrets \
+      #     --from-env-file=.env -n dagster
+      envSecrets:
+        - name: dagster-user-code-secrets
+
+      envConfigMaps: []
+
+# =============================================================================
+# COMPUTE LOGS (Optional - for storing run logs in S3/GCS/Azure)
+# =============================================================================
+computeLogs:
+  enabled: true
+  type: S3ComputeLogManager
+  config:
+    s3ComputeLogManager:
+      # ACTIVATE: Set to your S3 bucket and region
+      bucket: "{{S3_LOGS_BUCKET}}"
+      prefix: "dagster-logs/"
+      region: "{{AWS_REGION}}"
+
+# =============================================================================
+# SERVICE ACCOUNT
+# =============================================================================
+serviceAccount:
+  create: true
+  name: ""
+  annotations:
+    # ACTIVATE: Set to your IAM role ARN
+    eks.amazonaws.com/role-arn: "{{DAGSTER_IAM_ROLE_ARN}}"
+
+# =============================================================================
+# RBAC
+# =============================================================================
+rbac:
+  create: true
+
+# =============================================================================
+# POD SECURITY CONTEXT
+# =============================================================================
+# securityContext:
+#   runAsUser: 1000
+#   runAsGroup: 1000
+#   fsGroup: 1000

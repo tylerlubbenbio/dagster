@@ -1,0 +1,43 @@
+{
+  "$schema": "https://cursor.com/schemas/hooks.json",
+  "version": 1,
+  "hooks": [
+    {
+      "name": "Debug input for all tool calls",
+      "event": "beforeTool",
+      "command": ".claude/hooks/debug-input.sh",
+      "failMode": "continue",
+      "timeoutSeconds": 5
+    },
+    {
+      "name": "Prevent risky git commands",
+      "event": "beforeTool",
+      "command": ".claude/hooks/prevent-risky-git.sh",
+      "failMode": "block",
+      "timeoutSeconds": 5,
+      "filters": {
+        "tools": ["Bash"]
+      }
+    },
+    {
+      "name": "Prevent deletes (archive-only policy)",
+      "event": "beforeTool",
+      "command": ".claude/hooks/prevent-deletes-archive-only.sh",
+      "failMode": "block",
+      "timeoutSeconds": 5,
+      "filters": {
+        "tools": ["Delete", "Bash"]
+      }
+    },
+    {
+      "name": "Auto pre-commit in git repo",
+      "event": "afterTool",
+      "command": ".claude/hooks/pre-commit.sh",
+      "failMode": "continue",
+      "timeoutSeconds": 15,
+      "filters": {
+        "tools": ["Write", "Bash"]
+      }
+    }
+  ]
+}
