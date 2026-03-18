@@ -18,13 +18,14 @@ global:
 ingress:
   enabled: true
   annotations:
+    # NOTE: AWS ALB ingress annotations below — update for your cloud provider if not using AWS
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internal
     alb.ingress.kubernetes.io/target-type: ip
-    # ACTIVATE: Set to your ALB group name
+    # ACTIVATE: Set to your ALB group name (AWS-specific)
     alb.ingress.kubernetes.io/group.name: "{{ALB_GROUP_NAME}}"
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
-    # ACTIVATE: Set to your ACM certificate ARN
+    # ACTIVATE: Set to your ACM certificate ARN (AWS-specific)
     alb.ingress.kubernetes.io/certificate-arn: "{{ACM_CERTIFICATE_ARN}}"
     alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
     alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
@@ -174,14 +175,14 @@ dagster-user-deployments:
 
   serviceAccount:
     annotations:
-      # ACTIVATE: Set to your IAM role ARN for the Dagster service account
+      # ACTIVATE: Set to your IAM role ARN for the Dagster service account (AWS-specific — update for your cloud provider)
       eks.amazonaws.com/role-arn: "{{DAGSTER_IAM_ROLE_ARN}}"
 
   deployments:
     - name: "dagster-user-code"
       image:
-        # ACTIVATE: Set to your ECR repository URI
-        repository: "{{ECR_REGISTRY}}/{{PROJECT_NAME}}-dagster-user-code"
+        # ACTIVATE: Set to your container registry URI (AWS ECR shown — update for your cloud provider)
+        repository: "{{ECR_REGISTRY}}/bio-dagster-dbt-dagster-user-code"
         tag: "latest"
         pullPolicy: Always
 
@@ -222,12 +223,13 @@ dagster-user-deployments:
 # =============================================================================
 # COMPUTE LOGS (Optional - for storing run logs in S3/GCS/Azure)
 # =============================================================================
+# NOTE: AWS S3 compute log manager shown below — update for your cloud provider
 computeLogs:
   enabled: true
   type: S3ComputeLogManager
   config:
     s3ComputeLogManager:
-      # ACTIVATE: Set to your S3 bucket and region
+      # ACTIVATE: Set to your S3 bucket and region (AWS-specific — update for your cloud provider)
       bucket: "{{S3_LOGS_BUCKET}}"
       prefix: "dagster-logs/"
       region: "{{AWS_REGION}}"
@@ -239,7 +241,7 @@ serviceAccount:
   create: true
   name: ""
   annotations:
-    # ACTIVATE: Set to your IAM role ARN
+    # ACTIVATE: Set to your IAM role ARN (AWS-specific — update for your cloud provider)
     eks.amazonaws.com/role-arn: "{{DAGSTER_IAM_ROLE_ARN}}"
 
 # =============================================================================

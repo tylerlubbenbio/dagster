@@ -1,10 +1,10 @@
 # Dagster user code / code location (gRPC server)
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 RUN pip install --no-cache-dir \
     dagster==1.12.14 \
-    dagster-postgres==0.28.14 \
-    dagster-docker==0.28.14
+    dagster-docker==0.28.14 \
+    snowflake-connector-python
 
 WORKDIR /opt/dagster/app
 COPY definitions.py /opt/dagster/app

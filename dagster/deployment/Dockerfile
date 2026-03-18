@@ -2,14 +2,13 @@
 # Dagster User Code Server - Production Image
 # =============================================================================
 # Python 3.11 on slim Debian base
-# ACTIVATE: Update requirements installation if using non-Postgres dbt adapter
+# Uses dbt-snowflake adapter for Snowflake warehouse
 
 FROM python:3.11-slim
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
-    libpq-dev \
     curl \
     git \
     && rm -rf /var/lib/apt/lists/*
@@ -21,10 +20,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# ACTIVATE: Uncomment the correct dbt adapter:
-# RUN pip install --no-cache-dir dbt-postgres
-# RUN pip install --no-cache-dir dbt-snowflake
-# RUN pip install --no-cache-dir dbt-redshift
+# dbt adapter for Snowflake
+RUN pip install --no-cache-dir dbt-snowflake
 
 # Copy project files
 COPY dagster/ dagster/
