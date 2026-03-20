@@ -209,10 +209,34 @@ class WatermarkResource(ConfigurableResource):
             )
 
 
+class MetaResource(ConfigurableResource):
+    """Meta Marketing API connection. Reads config from load_config()."""
+
+    def _get_config(self) -> dict:
+        cfg = load_config()
+        return cfg["sources"]["meta"]
+
+    def get_access_token(self) -> str:
+        return self._get_config()["access_token"]
+
+    def get_ad_account_id(self) -> str:
+        return self._get_config()["ad_account_id"]
+
+    def get_api_version(self) -> str:
+        return self._get_config().get("api_version", "v18.0")
+
+    def test_connection(self) -> bool:
+        meta = self._get_config()
+        url = f"https://graph.facebook.com/{meta.get('api_version', 'v18.0')}/me"
+        resp = requests.get(url, params={"access_token": meta["access_token"]})
+        return resp.status_code == 200
+
+
 def get_all_resources() -> dict:
     """Build the resources dict for Definitions."""
     warehouse = WarehouseResource()
     return {
         "warehouse": warehouse,
         "watermark": WatermarkResource(warehouse=warehouse),
+        "meta": MetaResource(),
     }
