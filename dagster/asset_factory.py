@@ -40,7 +40,7 @@ from field_transforms import apply_mapping
 RAW_DIR = Path(__file__).resolve().parent / "ingestion" / "raw"
 
 # Default asset owner (pipeline maintainer); overridable per-source or per-asset in YAML via owners: [email]
-DEFAULT_OWNERS = ["{{DEFAULT_OWNER_EMAIL}}"]
+DEFAULT_OWNERS = ["team:data-engineering"]
 
 # Default retry policies by source_type (overridable per-source or per-asset in YAML)
 DEFAULT_RETRY = {

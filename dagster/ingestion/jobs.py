@@ -27,4 +27,12 @@ from dagster import AssetSelection, define_asset_job, in_process_executor
 #     tags={"dagster/max_concurrent_runs": "1"},
 # )
 
-jobs = []
+raw_meta_job = define_asset_job(
+    name="raw_meta_sync",
+    selection=AssetSelection.groups("raw_meta"),
+    description="Sync Meta (Facebook) campaigns and insights to raw_meta",
+    executor_def=in_process_executor,
+    tags={"dagster/max_concurrent_runs": "1"},
+)
+
+jobs = [raw_meta_job]

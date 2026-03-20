@@ -89,7 +89,7 @@
       "type": "mysql",
       "host": "dock-01-read-only-do-user-6652512-0.c.db.ondigitalocean.com",
       "port": 25060,
-      "database": "defaultdb",
+      "database": "dock-prod",
       "ssl": true,
       "ssl_verify": false
     },

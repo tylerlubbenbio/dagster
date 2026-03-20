@@ -125,15 +125,11 @@ class WarehouseIOManager(IOManager):
             (schema.upper(), table.upper()),
         )
         target_cols = [row[0] for row in cur.fetchall()]
-        record_col_set = set(record_columns)
+        record_col_upper = {c.upper() for c in record_columns}
         safe_columns = []
         for tc in target_cols:
-            if tc in record_col_set:
+            if tc.upper() in record_col_upper:
                 safe_columns.append(tc)
-            elif tc.lower() in record_col_set:
-                safe_columns.append(tc.lower())
-            elif tc.upper() in record_col_set:
-                safe_columns.append(tc.upper())
         if not safe_columns:
             raise ValueError(
                 f"No overlap between record columns and target {schema}.{table} columns. "
@@ -229,18 +225,19 @@ class WarehouseIOManager(IOManager):
                 for record in records:
                     f.write(json.dumps(record, default=str) + "\n")
 
+            cur.execute(f"USE SCHEMA {_qi(schema)}")
             cur.execute(
                 f"CREATE OR REPLACE TEMPORARY TABLE {_qi(staging_table)} "
                 f"AS SELECT * FROM {_qi(schema)}.{_qi(table)} WHERE 1=0"
             )
 
+            put_path = str(tmp_path).replace("\\", "/")
+            cur.execute(f"PUT 'file://{put_path}' @%{_qi(staging_table)} AUTO_COMPRESS=TRUE OVERWRITE=TRUE")
+
             safe_columns = self._get_safe_columns(cur, schema, table, columns)
 
-            cur.execute(f"PUT 'file://{tmp_path}' @%{_qi(staging_table)} AUTO_COMPRESS=TRUE OVERWRITE=TRUE")
-
-            col_list = ", ".join(_qi(c) for c in safe_columns)
             cur.execute(
-                f"COPY INTO {_qi(staging_table)} ({col_list}) "
+                f"COPY INTO {_qi(staging_table)} "
                 f"FROM @%{_qi(staging_table)} "
                 f"FILE_FORMAT = (TYPE = JSON) "
                 f"MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE"
@@ -339,6 +336,7 @@ class WarehouseIOManager(IOManager):
 
                 total_inserted = 0
                 max_watermark_value = None
+                inc_col_lower = incremental_col.lower() if incremental_col else None
 
                 with open(csv_path, "r", newline="", encoding="utf-8") as f:
                     reader = csv.DictReader(f)
@@ -346,10 +344,12 @@ class WarehouseIOManager(IOManager):
 
                     for row in reader:
                         batch.append(row)
-                        if incremental_col and row.get(incremental_col):
-                            val = str(row[incremental_col])
-                            if max_watermark_value is None or val > max_watermark_value:
-                                max_watermark_value = val
+                        if inc_col_lower:
+                            val = row.get(incremental_col) or row.get(inc_col_lower)
+                            if val:
+                                val = str(val)
+                                if max_watermark_value is None or val > max_watermark_value:
+                                    max_watermark_value = val
 
                         if len(batch) >= 1000:
                             self._insert_batch(cur, schema, table, pk_cols, batch, incremental_strategy, incremental_col, context)
@@ -412,6 +412,7 @@ class WarehouseIOManager(IOManager):
         max_watermark_value = None
         total_rows = 0
 
+        inc_col_lower = incremental_col.lower() if incremental_col else None
         with open(ndjson_path, "r", encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
@@ -421,10 +422,12 @@ class WarehouseIOManager(IOManager):
                 total_rows += 1
                 if columns is None:
                     columns = list(record.keys())
-                if incremental_col and record.get(incremental_col):
-                    val = str(record[incremental_col])
-                    if max_watermark_value is None or val > max_watermark_value:
-                        max_watermark_value = val
+                if inc_col_lower:
+                    val = record.get(incremental_col) or record.get(inc_col_lower)
+                    if val:
+                        val = str(val)
+                        if max_watermark_value is None or val > max_watermark_value:
+                            max_watermark_value = val
 
         if total_rows == 0:
             context.log.info("No records in NDJSON file — nothing to load.")
@@ -439,6 +442,8 @@ class WarehouseIOManager(IOManager):
         try:
             cur = conn.cursor()
             try:
+                cur.execute(f"USE SCHEMA {_qi(schema)}")
+
                 if incremental_strategy == "full_refresh":
                     cur.execute(f"TRUNCATE TABLE {_qi(schema)}.{_qi(table)}")
                     context.log.info(f"TRUNCATE {schema}.{table} (full_refresh)")
@@ -452,14 +457,14 @@ class WarehouseIOManager(IOManager):
 
                 safe_columns = self._get_safe_columns(cur, schema, table, columns)
 
+                put_path = str(ndjson_path).replace("\\", "/")
                 cur.execute(
-                    f"PUT 'file://{ndjson_path}' @%{_qi(staging_table)} "
+                    f"PUT 'file://{put_path}' @%{_qi(staging_table)} "
                     f"AUTO_COMPRESS=TRUE OVERWRITE=TRUE"
                 )
 
-                col_list = ", ".join(_qi(c) for c in safe_columns)
                 cur.execute(
-                    f"COPY INTO {_qi(staging_table)} ({col_list}) "
+                    f"COPY INTO {_qi(staging_table)} "
                     f"FROM @%{_qi(staging_table)} "
                     f"FILE_FORMAT = (TYPE = JSON) "
                     f"MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE"

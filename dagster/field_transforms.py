@@ -62,9 +62,31 @@ def json_dump(val):
     return json.dumps(val, default=str)
 
 
+def to_int(val):
+    """Convert to int. Meta API returns numbers as strings."""
+    if val is None or val == "":
+        return None
+    try:
+        return int(val)
+    except (ValueError, TypeError):
+        return None
+
+
+def to_float(val):
+    """Convert to float. Meta API returns decimals as strings."""
+    if val is None or val == "":
+        return None
+    try:
+        return float(val)
+    except (ValueError, TypeError):
+        return None
+
+
 # Transform registry — referenced by name in config.yaml
 TRANSFORMS = {
     "to_str": to_str,
+    "to_int": to_int,
+    "to_float": to_float,
     "warehouse_ts": warehouse_ts,
     "redshift_ts": warehouse_ts,  # alias
     "json_dump": json_dump,

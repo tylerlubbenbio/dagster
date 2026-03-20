@@ -4,18 +4,135 @@ connection_resource: meta
 custom_extractor: true
 default_group: raw_meta
 
-assets:
-  - name: meta_campaigns
-    target_schema: raw_meta
-    target_table: campaigns
-    primary_key: id
-    incremental_strategy: full_refresh
-    load_method: stage_copy
+# ──────────────────────────────────────────────────────────────
+# Step 1 findings (Universal API Architecture)
+# Extracted: 2026-03-19 | Account: act_719414398516529 (BiOptimizers5)
+# API: Meta Marketing API v18.0 (Graph API)
+# Auth: Long-lived access token (META_ACCESS_TOKEN in .env)
+# ──────────────────────────────────────────────────────────────
 
-  - name: meta_campaign_insights
-    target_schema: raw_meta
-    target_table: campaign_insights
-    primary_key: id
-    incremental_strategy: timestamp
-    incremental_column: date_start
+assets:
+  # ── campaigns ─────────────────────────────────────────────
+  # Endpoint: GET /{ad_account_id}/campaigns
+  # Volume: ~500 rows (full_refresh is fine)
+  # PK: id (source-native string, e.g. "120241835258960391")
+  # Incremental: full_refresh — small dataset, updated_time exists
+  #   but Meta doesn't support server-side filter on it reliably
+  # Optional fields (may be null): daily_budget, lifetime_budget,
+  #   bid_strategy, stop_time
+  # JSON/ARRAY columns -> VARIANT: special_ad_categories (list)
+  - name: meta_campaigns
+    target_schema: RAW_META
+    target_table: CAMPAIGNS
+    primary_key: ID
+    incremental_strategy: full_refresh
+    compute_kind: meta
     load_method: stage_copy
+    auto_timestamps: false
+    field_mappings:
+      - source: id
+        column: ID
+        transform: to_str
+      - source: name
+        column: NAME
+        transform: to_str
+      - source: status
+        column: STATUS
+        transform: to_str
+      - source: effective_status
+        column: EFFECTIVE_STATUS
+        transform: to_str
+      - source: objective
+        column: OBJECTIVE
+        transform: to_str
+      - source: buying_type
+        column: BUYING_TYPE
+        transform: to_str
+      - source: bid_strategy
+        column: BID_STRATEGY
+        transform: to_str
+      - source: daily_budget
+        column: DAILY_BUDGET
+        transform: to_str
+      - source: lifetime_budget
+        column: LIFETIME_BUDGET
+        transform: to_str
+      - source: budget_remaining
+        column: BUDGET_REMAINING
+        transform: to_str
+      - source: start_time
+        column: START_TIME
+        transform: to_str
+      - source: stop_time
+        column: STOP_TIME
+        transform: to_str
+      - source: created_time
+        column: CREATED_TIME
+        transform: to_str
+      - source: updated_time
+        column: UPDATED_TIME
+        transform: to_str
+      - source: special_ad_categories
+        column: SPECIAL_AD_CATEGORIES
+
+  # ── campaign_insights ─────────────────────────────────────
+  # Endpoint: GET /{ad_account_id}/insights?level=campaign&time_increment=1
+  # Volume: ~7 rows/day (6 active campaigns x 1 day), ~2500/year
+  # PK: campaign_id + date_start (composite)
+  # Incremental: timestamp on date_start (extract by time_range param)
+  # JSON/ARRAY columns -> VARIANT: actions, cost_per_action_type
+  # Note: "conversions" field deprecated — use "actions" array instead
+  # Note: cpc/cpm/ctr/cpp may be absent on zero-spend days
+  - name: meta_campaign_insights
+    target_schema: RAW_META
+    target_table: CAMPAIGN_INSIGHTS
+    primary_key: CAMPAIGN_ID,DATE_START
+    incremental_strategy: timestamp
+    incremental_column: DATE_START
+    compute_kind: meta
+    load_method: stage_copy
+    auto_timestamps: false
+    field_mappings:
+      - source: campaign_id
+        column: CAMPAIGN_ID
+        transform: to_str
+      - source: campaign_name
+        column: CAMPAIGN_NAME
+        transform: to_str
+      - source: date_start
+        column: DATE_START
+        transform: to_str
+      - source: date_stop
+        column: DATE_STOP
+        transform: to_str
+      - source: impressions
+        column: IMPRESSIONS
+        transform: to_int
+      - source: clicks
+        column: CLICKS
+        transform: to_int
+      - source: spend
+        column: SPEND
+        transform: to_float
+      - source: cpc
+        column: CPC
+        transform: to_float
+      - source: cpm
+        column: CPM
+        transform: to_float
+      - source: ctr
+        column: CTR
+        transform: to_float
+      - source: cpp
+        column: CPP
+        transform: to_float
+      - source: reach
+        column: REACH
+        transform: to_int
+      - source: frequency
+        column: FREQUENCY
+        transform: to_float
+      - source: actions
+        column: ACTIONS
+      - source: cost_per_action_type
+        column: COST_PER_ACTION_TYPE
