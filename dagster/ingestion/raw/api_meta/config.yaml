@@ -22,8 +22,8 @@ assets:
   #   bid_strategy, stop_time
   # JSON/ARRAY columns -> VARIANT: special_ad_categories (list)
   - name: meta_campaigns
-    target_schema: RAW_META
-    target_table: CAMPAIGNS
+    target_schema: raw_meta
+    target_table: campaigns
     primary_key: ID
     incremental_strategy: full_refresh
     compute_kind: meta
