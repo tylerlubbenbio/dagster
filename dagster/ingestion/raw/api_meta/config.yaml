@@ -84,8 +84,8 @@ assets:
   # Note: "conversions" field deprecated — use "actions" array instead
   # Note: cpc/cpm/ctr/cpp may be absent on zero-spend days
   - name: meta_campaign_insights
-    target_schema: RAW_META
-    target_table: CAMPAIGN_INSIGHTS
+    target_schema: raw_meta
+    target_table: campaign_insights
     primary_key: CAMPAIGN_ID,DATE_START
     incremental_strategy: timestamp
     incremental_column: DATE_START
